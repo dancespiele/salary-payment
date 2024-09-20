@@ -17,7 +17,7 @@ export const Admin = () => {
   const [employeesNotSubscribed, setEmployeesNotSubscribed] = useState<`0x${string}`[]>([]);
   const [salaries, setSalaries] = useState<number[]>([]);
   const [resourceAccountBalance, setResourceAccountBalance] = useState<number>(0);
-  const { account, connected } = useWallet();
+  const { connected } = useWallet();
   const { client } = useWalletClient();
 
   useEffect(() => {
@@ -100,6 +100,30 @@ export const Admin = () => {
     }
   };
 
+  const onRemoveEmployee = async (employee: `0x${string}`) => {
+    try {
+      const tx = await client?.useABI(SalaryPaymentAbi).remove_employee({
+        type_arguments: [],
+        arguments: [employee],
+      });
+
+      setEmployeesNotSubscribed(employeesNotSubscribed.filter((e) => e !== employee));
+      setEmployeesSubscribed(employeesSubscribed.filter((e) => e !== employee));
+
+      toast({
+        title: "Removed employee",
+        description: `${tx?.hash}`,
+        variant: "default",
+      });
+    } catch (error) {
+      toast({
+        title: "Error removing employee",
+        description: `${error}`,
+        variant: "destructive",
+      });
+    }
+  };
+
   const onAddSalary = (salary: number, employee: number) => {
     const salariesCopy = [...salaries];
 
@@ -176,7 +200,7 @@ export const Admin = () => {
             />
           </div>
           <div className="w-1/6 m-2 self-end mb-10">
-            <Button variant="default" onClick={onAdd} disabled={Boolean(newAddress)}>
+            <Button variant="default" onClick={onAdd} disabled={!newAddress}>
               Add
             </Button>
           </div>
@@ -187,6 +211,9 @@ export const Admin = () => {
                 <div>
                   Employee {i + 1}: {e}
                 </div>
+                <Button className="mt-5" onClick={() => onRemoveEmployee(e)} variant="destructive">
+                  Remove Employee
+                </Button>
               </div>
             ))}
             {Boolean(employeesSubscribed.length) && (
@@ -206,6 +233,9 @@ export const Admin = () => {
                   onChange={(e) => onAddSalary(Number(e.target.value), i)}
                   type="number"
                 />
+                <Button className="mt-5" onClick={() => onRemoveEmployee(e)} variant="destructive">
+                  Remove Employee
+                </Button>
               </div>
             ))}
             <Button className="mt-10" variant="default" onClick={onPayEmployees} disabled={!employeesSubscribed.length}>

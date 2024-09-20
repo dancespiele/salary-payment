@@ -37,7 +37,7 @@ export function Payment() {
     } catch (e) {
       toast({
         title: "Error to claim salary",
-        description: `Error to claim salary: ${e}`,
+        description: `${e}`,
         variant: "destructive",
       });
     }
@@ -61,7 +61,7 @@ export function Payment() {
       console.error(e);
       toast({
         title: "Error subscribing to payment",
-        description: `Error to subscribe to the salary payment service: ${e}`,
+        description: `${e}`,
         variant: "destructive",
       });
     }
