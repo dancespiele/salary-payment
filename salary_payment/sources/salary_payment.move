@@ -6,7 +6,6 @@ module salary_addr::payment {
 
     use aptos_framework::aptos_account;
     use aptos_framework::event;
-    use aptos_framework::object::{Self, ObjectCore};
     use aptos_framework::account::{Self, SignerCapability};
     use aptos_framework::coin;
 
@@ -31,6 +30,12 @@ module salary_addr::payment {
     }
 
     struct SalaryToClaim has key {
+        amount: u64,
+    }
+
+    #[event]
+    struct Payment has store, drop {
+        employee: address,
         amount: u64,
     }
 
@@ -141,6 +146,13 @@ module salary_addr::payment {
 
         salary_admin.salary_not_claimed = salary_admin.salary_not_claimed - salary_to_claim.amount;
 
+
+        event::emit(Payment {
+            employee: account_addr,
+            amount: salary_to_claim.amount
+        });
+
+
         salary_to_claim.amount = 0;
     }
 
@@ -151,7 +163,7 @@ module salary_addr::payment {
 
         let salary_admin = borrow_global_mut<SalaryAdmin>(@salary_addr);
 
-        let (is_found, index) = vector::find<address>(&salary_admin.employees, |c| {
+        let (is_found, _index) = vector::find<address>(&salary_admin.employees, |c| {
             vector::any(&employees, |e| e == c)
         });
 
@@ -227,11 +239,7 @@ module salary_addr::payment {
 
     #[view]
     public fun check_employee_object(account_addr: address): bool {
-        if(exists<SalaryToClaim>(account_addr)) {
-            true
-        }else {
-            false
-        }
+        exists<SalaryToClaim>(account_addr)
     }
 
     #[view]
@@ -239,6 +247,25 @@ module salary_addr::payment {
         let salary_to_claim = borrow_global<SalaryToClaim>(account_addr);
         salary_to_claim.amount
     }
+
+    #[view]
+    public fun resource_account_exists(): bool acquires SalaryAdmin {
+        let salary_admin = borrow_global<SalaryAdmin>(@salary_addr);
+        option::is_some(&salary_admin.signer_cap)
+    }
+
+    #[view]
+    public fun get_resource_account_address(): address acquires SalaryAdmin {
+        let salary_admin = borrow_global<SalaryAdmin>(@salary_addr);
+        let resource_sign_cap = get_signer_cap(&salary_admin.signer_cap);
+
+        let resource_signer = account::create_signer_with_capability(resource_sign_cap);
+
+        let resource_signer_addr = signer::address_of(&resource_signer);
+
+        resource_signer_addr
+    }
+
 
 
     fun is_admin(config: &Config, sender: address): bool {
@@ -262,9 +289,6 @@ module salary_addr::payment {
 
     #[test_only]
     use aptos_std::math64;
-
-    #[test_only]
-    use aptos_std::debug;
 
     #[test_only]
     const EBALANCE_NOT_EQUAL: u64 = 18;

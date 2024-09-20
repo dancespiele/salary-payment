@@ -1,8 +1,5 @@
 import { Outlet, RouterProvider, createBrowserRouter } from "react-router-dom";
-
-import { Mint } from "@/pages/Mint";
-import { CreateCollection } from "@/pages/CreateCollection";
-import { MyCollections } from "@/pages/MyCollections";
+import { Payment } from "./pages/Payment";
 
 function Layout() {
   return (
@@ -18,15 +15,7 @@ const router = createBrowserRouter([
     children: [
       {
         path: "/",
-        element: <Mint />,
-      },
-      {
-        path: "create-collection",
-        element: <CreateCollection />,
-      },
-      {
-        path: "my-collections",
-        element: <MyCollections />,
+        element: <Payment />,
       },
     ],
   },
