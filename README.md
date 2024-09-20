@@ -1,33 +1,35 @@
-## Create Aptos Dapp Digital Asset Template
+## Salary payment
 
-Digital Assets are the NFT standard for Aptos. The Digital Asset template provides an end-to-end NFT minting dapp with a beautiful pre-made UI users can quickly adjust and deploy into a live server.
+Salary payment is an app to manage salary payment which works in aptos network. These are the instructions to run the app:
 
-Read more about how to use the template [here](https://aptos.dev/create-aptos-dapp/templates/digital-asset)
+1. create the .env file in the root directory with the next env vars:
 
-The Digital Asset template provides 3 pages:
+```cmd
+PROJECT_NAME=salary_payment
+VITE_APP_NETWORK=[NETWORK OF THE APP TESNET or MAINNET]
+VITE_MODULE_ADDRESS=[YOU ADDRESS ACCOUNT WHERE THE CONTRACT WILL BE DEPLOYED]]
+```
 
-- **Public Mint NFT Page** - A page for the public to mint NFTs.
-- **Create Collection Page** - A page for creating new NFT collections. This page is not accessible on production.
-- **My Collections Page** - A page to view all the collections created under the current Move module (smart contract). This page is not accessible on production.
+2. Install modules:
 
-### What tools the template uses?
+```cmd
+yarn
+```
 
-- React framework
-- Vite development tool
-- shadcn/ui + tailwind for styling
-- Aptos TS SDK
-- Aptos Wallet Adapter
-- Node based Move commands
+3. Publish the contract:
 
-### What Move commands are available?
+```cmd
+yarn salary-payment:compile && yarn salary-payment:publish
+```
 
-The tool utilizes [aptos-cli npm package](https://github.com/aptos-labs/aptos-cli) that lets us run Aptos CLI in a Node environment.
+4. Run the app:
 
-Some commands are built-in the template and can be ran as a npm script, for example:
+```cmd
+yarn dev
+```
 
-- `npm run move:init` - a command to initialize an account to publish the Move contract and to configure the development environment
-- `npm run move:publish` - a command to publish the Move contract
-- `npm run move:test` - a command to run Move unit tests
-- `npm run move:compile` - a command to compile the Move contract
-
-For all other available CLI commands, can run `npx aptos` and see a list of all available commands.
+5. Go to the link that is shown in the terminal and in the web click in `create resource account` button
+7. Fund the address showing after creating the resource account
+8. Now you can start add employees
+9. Employees need to subscribe to the payment to start receiving salarys clicking in `subscribe`
+10. After they subscribe, you can fill the salary amount of each employee and click in `payment` button to pay them
